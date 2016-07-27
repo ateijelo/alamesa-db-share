@@ -1,0 +1,50 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2016-07-25T10:21:58
+#
+#-------------------------------------------------
+
+QT       += core gui network
+CONFIG   += c++11 c++14
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+TARGET = alamesa-db-share
+TEMPLATE = app
+
+INCLUDEPATH += qhttp
+
+
+SOURCES += main.cpp\
+        dialog.cpp \
+        qhttp/http-parser/http_parser.c \
+        qhttp/qhttpabstracts.cpp \
+        qhttp/qhttpserver.cpp \
+        qhttp/qhttpserverconnection.cpp \
+        qhttp/qhttpserverrequest.cpp \
+        qhttp/qhttpserverresponse.cpp \
+    filetransfer.cpp
+
+HEADERS  += dialog.h \
+        qhttp/private/httpparser.hxx \
+        qhttp/private/httpreader.hxx \
+        qhttp/private/httpwriter.hxx \
+        qhttp/private/qhttpbase.hpp \
+        qhttp/private/qhttpclient_private.hpp \
+        qhttp/private/qhttpclientrequest_private.hpp \
+        qhttp/private/qhttpclientresponse_private.hpp \
+        qhttp/private/qhttpserver_private.hpp \
+        qhttp/private/qhttpserverconnection_private.hpp \
+        qhttp/private/qhttpserverrequest_private.hpp \
+        qhttp/private/qhttpserverresponse_private.hpp \
+        qhttp/private/qsocket.hpp \
+        qhttp/http-parser/http_parser.h \
+        qhttp/qhttpabstracts.hpp \
+        qhttp/qhttpfwd.hpp \
+        qhttp/qhttpserver.hpp \
+        qhttp/qhttpserverconnection.hpp \
+        qhttp/qhttpserverrequest.hpp \
+        qhttp/qhttpserverresponse.hpp \
+    filetransfer.h
+
+FORMS    += dialog.ui
