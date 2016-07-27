@@ -21,8 +21,8 @@ Dialog::Dialog(QWidget *parent) :
                 resp->setStatusCode(qhttp::ESTATUS_OK);
                 resp->end("Hello, world!");
             } else if (req->url().path() == "/file") {
-                new FileTransfer("/home/andy/posfile", req, resp, this);
-                //new FileTransfer("/media/andy/mirror/Xcode_7.3.dmg", req, resp, this);
+                //new FileTransfer("/home/andy/posfile", req, resp, this);
+                new FileTransfer("/media/andy/mirror/Xcode_7.3.dmg", req, resp, this);
             } else {
                 resp->setStatusCode(qhttp::ESTATUS_NOT_FOUND);
                 resp->addHeader("Content-type", "text/html");

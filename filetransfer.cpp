@@ -29,13 +29,12 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
     connect(resp, &QHttpResponse::done, this, &FileTransfer::responseDone);
     connect(resp, &QObject::destroyed, this, &FileTransfer::responseDestroyed);
 
-    req->headers().forEach([](auto& iter){
-        qDebug() << iter.key() << ":" << iter.value();
-    });
+//    req->headers().forEach([](auto& iter){
+//        qDebug() << iter.key() << ":" << iter.value();
+//    });
 
     if (req->headers().has("range")) {
         file_ranges = parseRanges(req->headers().value("range"), file.size());
-        cout << "range: " << file_ranges << endl;
     }
 
     resp->setStatusCode(qhttp::ESTATUS_OK);
@@ -96,6 +95,8 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
         resp->addHeader("Content-length", QString("%1").arg(content_length).toLatin1());
     }
 
+    cout << "transfering range: " << file_ranges << endl;
+
 //    auto a = discrete_interval<int>::closed(0,0);
 //    auto b = discrete_interval<int>::closed(1,1);
 //    interval_set<int> s;
@@ -138,7 +139,6 @@ static QRegularExpression rangeSpecRE(R"((?<start>\d*)\s*-\s*(?<end>\d*))");
 FileTransfer::ranges FileTransfer::parseRanges(
         const QByteArray &rangeHeader, qint64 filesize)
 {
-    qDebug() << "parseRanges:";
     QString s = QString::fromLatin1(rangeHeader);
 
     ranges r;
@@ -187,13 +187,13 @@ FileTransfer::ranges FileTransfer::parseRanges(
 void FileTransfer::responseDone(bool wasTheLastPacket)
 {
     Q_UNUSED(wasTheLastPacket);
-    qDebug() << "responseDone" << endl;
+//    qDebug() << "responseDone" << endl;
     deleteLater();
 }
 
 void FileTransfer::responseDestroyed()
 {
-    qDebug() << "responseDestroyed" << endl;
+//    qDebug() << "responseDestroyed" << endl;
     deleteLater();
 }
 
@@ -243,8 +243,6 @@ void FileTransfer::serve()
 
     size_t n = file_ranges.iterative_size();
     file_ranges.subtract(discrete_interval<qint64>::right_open(from, from + bytes_read));
-    cout << "wrote from " << from << " to " << from + bytes_read << endl;
-    cout << "file_ranges now is: " << file_ranges << endl;
     size_t m = file_ranges.iterative_size();
     if (n != m) {
         // one less subinterval
