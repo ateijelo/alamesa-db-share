@@ -45,9 +45,7 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
     if (file_ranges.iterative_size() == 0) {
         resp->addHeader("Content-Length",QString("%1").arg(file.size()).toLatin1());
         file_ranges.add(discrete_interval<qint64>::right_open(0,file.size()));
-    }
-
-    if (file_ranges.iterative_size() == 1) {
+    } else if (file_ranges.iterative_size() == 1) {
         qint64 a = first(file_ranges);
         qint64 b = last(file_ranges);
 
@@ -61,9 +59,7 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
             );
             resp->addHeader("Content-Length", QString("%1").arg(file_ranges.size()).toLatin1());
         }
-    }
-
-    if (file_ranges.iterative_size() > 1) {
+    } else if (file_ranges.iterative_size() > 1) {
         resp->setStatusCode(qhttp::ESTATUS_PARTIAL_CONTENT);
         now_goes_a_boundary = true;
 
