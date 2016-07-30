@@ -22,16 +22,21 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
 {
     buffer_size = 64*1024;
     buffer = new char[buffer_size];
-//    file_pos = 0;
-
-    file.open(QFile::ReadOnly);
 
     connect(resp, &QHttpResponse::done, this, &FileTransfer::responseDone);
     connect(resp, &QObject::destroyed, this, &FileTransfer::responseDestroyed);
 
-//    req->headers().forEach([](auto& iter){
-//        qDebug() << iter.key() << ":" << iter.value();
-//    });
+    if (!file.exists()) {
+        resp->setStatusCode(qhttp::ESTATUS_NOT_FOUND);
+        resp->end();
+        return;
+    }
+
+    if (!file.open(QFile::ReadOnly)) {
+        resp->setStatusCode(qhttp::ESTATUS_FORBIDDEN);
+        resp->end();
+        return;
+    }
 
     if (req->headers().has("range")) {
         file_ranges = parseRanges(req->headers().value("range"), file.size());
@@ -50,6 +55,8 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
 
         if (a < 0) { // my convention in parseRanges for Not Satisfiable
             resp->setStatusCode(qhttp::ESTATUS_REQUESTED_RANGE_NOT_SATISFIABLE);
+            resp->end();
+            return;
         } else {
             resp->setStatusCode(qhttp::ESTATUS_PARTIAL_CONTENT);
             resp->addHeader(
@@ -124,7 +131,6 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
     }
 
     connect(resp, &QHttpResponse::allBytesWritten, this, &FileTransfer::serve);
-
     serve();
 }
 

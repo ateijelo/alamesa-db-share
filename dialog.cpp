@@ -2,6 +2,7 @@
 #include "ui_dialog.h"
 
 #include <QFile>
+#include <QMouseEvent>
 #include <qhttpserver.hpp>
 #include <qhttpserverrequest.hpp>
 #include <qhttpserverresponse.hpp>
@@ -21,8 +22,8 @@ Dialog::Dialog(QWidget *parent) :
                 resp->setStatusCode(qhttp::ESTATUS_OK);
                 resp->end("Hello, world!");
             } else if (req->url().path() == "/file") {
-                //new FileTransfer("/home/andy/posfile", req, resp, this);
-                new FileTransfer("/media/andy/mirror/Xcode_7.3.dmg", req, resp, this);
+                new FileTransfer("/home/andy/Software/debian-8.1.0-amd64-netinst.iso", req, resp, this);
+                //new FileTransfer("/etc/shadow", req, resp, this);
             } else {
                 resp->setStatusCode(qhttp::ESTATUS_NOT_FOUND);
                 resp->addHeader("Content-type", "text/html");
@@ -30,6 +31,8 @@ Dialog::Dialog(QWidget *parent) :
             }
         }
     );
+
+    setWindowFlags(windowFlags() |= Qt::FramelessWindowHint);
 
     setWindowTitle("AlaMesa DB Share");
 
@@ -40,6 +43,16 @@ Dialog::Dialog(QWidget *parent) :
     }
 
     ui->setupUi(this);
+}
+
+void Dialog::mousePressEvent(QMouseEvent *event)
+{
+    delta = event->globalPos() - pos();
+}
+
+void Dialog::mouseMoveEvent(QMouseEvent *event)
+{
+    move(event->globalPos() - delta);
 }
 
 Dialog::~Dialog()

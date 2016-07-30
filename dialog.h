@@ -14,11 +14,14 @@ class Dialog : public QDialog
 
 public:
     explicit Dialog(QWidget *parent = 0);
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     ~Dialog();
 
 private:
     Ui::Dialog *ui;
     qhttp::server::QHttpServer server;
+    QPoint delta;
 };
 
 #endif // DIALOG_H
