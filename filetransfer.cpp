@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QUuid>
 #include <iostream>
 
 #include <QRegularExpression>
@@ -20,6 +21,8 @@ static QRegularExpression rangeHeaderRE(
 FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResponse *resp, QObject *parent)
     : QObject(parent), file(filename), resp(resp)
 {
+    _id = QUuid::createUuid();
+
     buffer_size = 64*1024;
     buffer = new char[buffer_size];
 
@@ -69,11 +72,12 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
         resp->setStatusCode(qhttp::ESTATUS_PARTIAL_CONTENT);
         now_goes_a_boundary = true;
 
-        char s[17]; s[16] = '\0';
-        for (int i = 0; i < 16; i++) {
-            s[i] = "0123456789abcdef"[qrand()%16];
-        }
-        QString boundary(s);
+//        char s[17]; s[16] = '\0';
+//        for (int i = 0; i < 16; i++) {
+//            s[i] = "0123456789abcdef"[qrand()%16];
+//        }
+        QString boundary(_id.toString());
+        boundary.remove(QRegularExpression("[{}-]"));
         qint64 content_length = 0;
         for (auto it = file_ranges.begin(); it != file_ranges.end(); it++) {
             auto i = *it;
@@ -102,7 +106,7 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
         resp->addHeader("Content-length", QString("%1").arg(content_length).toLatin1());
     }
 
-    cout << "transfering range: " << file_ranges << endl;
+//    cout << "transfering range: " << file_ranges << endl;
 
 //    auto a = discrete_interval<int>::closed(0,0);
 //    auto b = discrete_interval<int>::closed(1,1);
@@ -137,7 +141,13 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
 FileTransfer::~FileTransfer()
 {
     free(buffer);
-    qDebug() << "Transfer" << (void*)this << "deleted";
+    emit transferred(transfer_size, file.size());
+//    qDebug() << "Transfer" << (void*)this << "deleted";
+}
+
+QString FileTransfer::id()
+{
+    return _id.toString().remove(QRegularExpression("[{}]"));
 }
 
 static QRegularExpression rangeSpecRE(R"((?<start>\d*)\s*-\s*(?<end>\d*))");
@@ -199,7 +209,7 @@ void FileTransfer::responseDone(bool wasTheLastPacket)
 
 void FileTransfer::responseDestroyed()
 {
-//    qDebug() << "responseDestroyed" << endl;
+//    qDebug() << "responseDestroyed" << endl;    
     deleteLater();
 }
 
@@ -245,6 +255,7 @@ void FileTransfer::serve()
 //    file_pos += r;
 
     sendBoundary();
+    transfer_size += bytes_read;
     resp->write(QByteArray::fromRawData(buffer, bytes_read));
 
     size_t n = file_ranges.iterative_size();

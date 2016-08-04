@@ -17,7 +17,6 @@ INCLUDEPATH += qhttp
 
 
 SOURCES += main.cpp\
-        dialog.cpp \
         qhttp/http-parser/http_parser.c \
         qhttp/qhttpabstracts.cpp \
         qhttp/qhttpserver.cpp \
@@ -25,9 +24,11 @@ SOURCES += main.cpp\
         qhttp/qhttpserverrequest.cpp \
         qhttp/qhttpserverresponse.cpp \
     filetransfer.cpp \
-    imagewidget.cpp
+    imagewidget.cpp \
+    mainwindow.cpp \
+    logsdialog.cpp
 
-HEADERS  += dialog.h \
+HEADERS  += \
         qhttp/private/httpparser.hxx \
         qhttp/private/httpreader.hxx \
         qhttp/private/httpwriter.hxx \
@@ -48,9 +49,13 @@ HEADERS  += dialog.h \
         qhttp/qhttpserverrequest.hpp \
         qhttp/qhttpserverresponse.hpp \
     filetransfer.h \
-    imagewidget.h
+    imagewidget.h \
+    mainwindow.h \
+    logsdialog.h
 
-FORMS    += dialog.ui
+FORMS    += \
+    mainwindow.ui \
+    logsdialog.ui
 
 RESOURCES += \
     resources.qrc
