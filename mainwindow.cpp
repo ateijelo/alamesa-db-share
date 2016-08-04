@@ -86,19 +86,24 @@ void MainWindow::startServer(QString dbfile)
 
     QFileInfo fi(dbfile);
     date = fi.baseName().right(8);
-    hostname = "hostname-only-works-in-osx";
+    hostname = "hostname-not-implemented";
 
     QString program;
     QStringList args;
+    QProcess hostname_cmd;
 #ifdef Q_OS_MAC
-    QProcess sc;
     program = "scutil";
     args << "--get" << "LocalHostName";
-    sc.start(program, args);
-    sc.waitForFinished(500);
-    QByteArray ba = sc.readAll();
-    hostname = QString::fromLatin1(ba).trimmed() + ".local";
 #endif
+#ifdef Q_OS_LINUX
+    program = "hostname";
+#endif
+    if (!program.isEmpty()) {
+        hostname_cmd.start(program, args);
+        hostname_cmd.waitForFinished(500);
+        QByteArray ba = hostname_cmd.readAll();
+        hostname = QString::fromLatin1(ba).trimmed() + ".local";
+    }
 
     port = 4040;
     while (port < 4140) {
@@ -149,21 +154,33 @@ void MainWindow::startServer(QString dbfile)
     //setWindowFlags(windowFlags() |= Qt::FramelessWindowHint);
 
     setWindowTitle("AlaMesa DB Share");
+    setWindowIcon(QIcon(":/icon.png"));
 
 
     if (server.isListening()) {
         args.clear();
+        program.clear();
         qDebug() << "server is listening on port" << port;
 //        qDebug() << "publishing.";
 
 #ifdef Q_OS_MAC
         program = "dns-sd";
         args << "-R" << "AlaMesa DB Updates" << "_alamesaupdates._tcp" << "local" << QString("%1").arg(port);
-        servicePublisher.start(program, args);
-        service_publisher_pid = servicePublisher.pid();
-        ui->msgLabel->setText(QString("Sharing database: <b>%1.db</b>").arg(fi.baseName()));
 #endif
-
+#ifdef Q_OS_LINUX
+        program = "avahi-publish-service";
+        args << "AlaMesa DB Updates" << "_alamesaupdates._tcp" << QString("%1").arg(port);
+#endif
+        if (!program.isEmpty()) {
+            servicePublisher.start(program, args);
+            service_publisher_pid = servicePublisher.pid();
+            ui->msgLabel->setText(QString("Sharing database: <b>%1.db</b><br>(on <i>%2:%3</i>)")
+                                  .arg(fi.baseName())
+                                  .arg(hostname)
+                                  .arg(port));
+        } else {
+            ui->msgLabel->setText("Service publishing is not implemented");
+        }
     } else {
         qDebug() << "server failed to listen";
         ui->msgLabel->setText("Server failed to listen");
