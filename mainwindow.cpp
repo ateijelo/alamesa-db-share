@@ -112,7 +112,7 @@ void MainWindow::startServer(QString dbfile)
             [this, dbfile](QHttpRequest *req, QHttpResponse *resp) {
 
                 auto path = req->url().path();
-                QString logline = QString("GET %1 %2").arg(path).arg(req->remoteAddress());
+                QString logline = QString("%1 %2 %3").arg(req->methodString()).arg(path).arg(req->remoteAddress());
 
                 if (path == "/ios/last.txt")
                 {
