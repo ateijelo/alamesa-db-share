@@ -9,8 +9,9 @@ CONFIG   += c++11 c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = alamesa-db-share
+TARGET = "AlaMesa DB Share"
 TEMPLATE = app
+ICON = icon.icns
 
 INCLUDEPATH += qhttp
 
@@ -23,7 +24,8 @@ SOURCES += main.cpp\
         qhttp/qhttpserverconnection.cpp \
         qhttp/qhttpserverrequest.cpp \
         qhttp/qhttpserverresponse.cpp \
-    filetransfer.cpp
+    filetransfer.cpp \
+    imagewidget.cpp
 
 HEADERS  += dialog.h \
         qhttp/private/httpparser.hxx \
@@ -45,6 +47,10 @@ HEADERS  += dialog.h \
         qhttp/qhttpserverconnection.hpp \
         qhttp/qhttpserverrequest.hpp \
         qhttp/qhttpserverresponse.hpp \
-    filetransfer.h
+    filetransfer.h \
+    imagewidget.h
 
 FORMS    += dialog.ui
+
+RESOURCES += \
+    resources.qrc
