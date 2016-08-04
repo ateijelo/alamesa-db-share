@@ -133,6 +133,7 @@ void MainWindow::startServer(QString dbfile)
                         resp->end("<html><head><title>Not Found</title></head><body><h1>404 - Not Found</h1></body>\n");
                     } else {
                         logs.flush();
+                        resp->addHeader("Content-type", "text/plain");
                         new FileTransfer(logs.filename(), req, resp, this);
                     }
                 }

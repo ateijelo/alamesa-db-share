@@ -46,7 +46,8 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
     }
 
     resp->setStatusCode(qhttp::ESTATUS_OK);
-    resp->addHeader("Content-type", "application/octet-stream");
+    if (!resp->headers().has("content-type"))
+        resp->addHeader("Content-type", "application/octet-stream");
     resp->addHeader("Accept-Ranges", "bytes");
 
     if (file_ranges.iterative_size() == 0) {
