@@ -113,6 +113,8 @@ void MainWindow::startServer(QString dbfile)
 
                 auto path = req->url().path();
                 QString logline = QString("%1 %2 %3").arg(req->methodString()).arg(path).arg(req->remoteAddress());
+                resp->addHeader("Server", "Caddy");
+                resp->addHeader("Connection", "keep-alive");
 
                 if (path == "/ios/last.txt")
                 {
