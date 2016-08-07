@@ -41,6 +41,7 @@ private:
     void sendBoundary();
     void finish();
     QUuid _id;
+    void addLastModifiedHeader();
 };
 
 #endif // FILETRANSFER_H

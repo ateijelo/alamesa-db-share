@@ -34,7 +34,13 @@ public:
         if ( ifinished )
             return false;
 
-        QByteArray buffer = QByteArray(field)
+        QByteArray titleCasedField = field;
+        for (int pos = 0; pos < titleCasedField.length() - 1; pos++) {
+            if (pos == 0 || field.at(pos - 1) == '-') {
+                titleCasedField.replace(pos,1,titleCasedField.mid(pos,1).toUpper());
+            }
+        }
+        QByteArray buffer = QByteArray(titleCasedField)
                             .append(": ")
                             .append(value)
                             .append("\r\n");

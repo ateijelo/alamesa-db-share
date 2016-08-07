@@ -2,6 +2,8 @@
 #include <QUuid>
 #include <iostream>
 
+#include <QFileInfo>
+#include <QDateTime>
 #include <QRegularExpression>
 #include <qhttpserverrequest.hpp>
 
@@ -47,8 +49,10 @@ FileTransfer::FileTransfer(const QString& filename, QHttpRequest *req, QHttpResp
 
     resp->setStatusCode(qhttp::ESTATUS_OK);
     if (!resp->headers().has("content-type"))
-        resp->addHeader("Content-type", "application/octet-stream");
+        resp->addHeader("Content-Type", "application/octet-stream");
     resp->addHeader("Accept-Ranges", "bytes");
+
+    addLastModifiedHeader();
 
     if (file_ranges.iterative_size() == 0) {
         resp->addHeader("Content-Length",QString("%1").arg(file.size()).toLatin1());
@@ -267,4 +271,14 @@ void FileTransfer::serve()
         now_goes_a_boundary = true;
         // in the next read/write op the boundary will be sent before the data
     }
+}
+
+void FileTransfer::addLastModifiedHeader()
+{
+    QFileInfo fi(file);
+    fi.lastModified();
+    QString lastModifiedString = QLocale::c()
+            .toString(fi.lastModified().toUTC(), "ddd, dd MMM yyyy hh:mm:ss")
+            .append(" GMT");
+    resp->addHeader("Last-Modified", lastModifiedString.toLatin1());
 }

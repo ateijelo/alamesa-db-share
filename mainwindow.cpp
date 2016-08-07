@@ -113,7 +113,7 @@ void MainWindow::startServer(QString dbfile)
 
                 auto path = req->url().path();
                 QString logline = QString("%1 %2 %3").arg(req->methodString()).arg(path).arg(req->remoteAddress());
-                resp->addHeader("Server", "Caddy");
+                resp->addHeader("Server", "AlaMesa-DB-Share");
                 resp->addHeader("Connection", "keep-alive");
 
                 if (path == "/ios/last.txt")
@@ -249,8 +249,13 @@ void MainWindow::reply_iOS_LastTxt(QHttpResponse *resp)
                         .arg(date)
                         .toLatin1();
     resp->setStatusCode(qhttp::ESTATUS_OK);
+    resp->addHeader("Accept-Ranges","bytes");
     resp->addHeader("Cache-Control", "no-cache");
-//    qDebug() << "sending" << dburl;
+    resp->addHeader("Content-Type", "text/plain");
+
+    int content_length = dburl.length() + 1;
+
+    resp->addHeader("Content-Length", QString("%1").arg(content_length).toLatin1());
     resp->write(dburl);
     resp->end("\n");
 }

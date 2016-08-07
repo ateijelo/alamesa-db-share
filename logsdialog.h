@@ -26,7 +26,7 @@ private:
     QFile logfile;
 //    QLinkedList<QString> lines;
 //    int maxlines = 10000;
-    qreal transfers;
+    qreal transfers = 0;
 };
 
 #endif // LOGSDIALOG_H
