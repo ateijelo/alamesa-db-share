@@ -13,3 +13,5 @@ It has two components:
    manually advertise the existence of the service from another Mac or Linux
    computer. If you don't have any Mac or Linux computer around, I'm sorry for
    your loss.
+
+There's some more info in [this post](http://www.ateijelo.com/blog/2016/08/07/alamesa-db-share) in my blog.
